@@ -184,16 +184,14 @@ box-shadow:0 0 18px rgba(0,229,255,.75);
 .mode{
 display:flex;
 align-items:center;
-gap:8px;
-padding:12px 18px;
+justify-content:center;
+padding:8px;
 border-radius:14px;
 background:rgba(255,255,255,.05);
 border:1px solid rgba(255,255,255,.08);
 color:var(--cyan);
-font-size:14px;
-font-weight:700;
-text-decoration:none;
 transition:.2s;
+cursor:pointer;
 }
 
 .mode:hover{
@@ -202,9 +200,11 @@ border-color:rgba(0,229,255,.45);
 box-shadow:0 0 18px rgba(0,229,255,.18);
 }
 
-.mode svg{
-width:18px;
-height:18px;
+.mode img{
+width:72px;
+height:72px;
+object-fit:contain;
+display:block;
 }
 
 /* HERO */
@@ -745,11 +745,7 @@ CQ
 </div>
 
 <a class="mode" href="https://www.w3schools.com/" target="_blank" rel="noopener noreferrer" title="Ouvrir W3Schools">
-<svg viewBox="0 0 24 24" aria-hidden="true">
-<path fill="currentColor" d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3Z"/>
-<path fill="currentColor" d="M5 5h6v2H7v10h10v-4h2v6H5V5Z"/>
-</svg>
-W3Schools
+<img src="src/img/bonus.webp" alt="Bonus">
 </a>
 
 </div>
