@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CodeQuest - Mini-jeux</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Rajdhani:wght@500;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+<style>
+:root{
+--cyan:#00e5ff;
+--purple:#8b5cf6;
+--gold:#fbbf24;
+--green:#22c55e;
+--red:#ef4444;
+--panel:rgba(8,14,30,.88);
+}
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+}
+
+body{
+min-height:100vh;
+font-family:Orbitron,sans-serif;
+color:white;
+background:
+radial-gradient(circle at top left,rgba(0,229,255,.18),transparent 34%),
+radial-gradient(circle at bottom right,rgba(251,191,36,.13),transparent 30%),
+#050812;
+overflow-x:hidden;
+}
+
+.bg{
+position:fixed;
+inset:0;
+z-index:-2;
+}
+
+.bg img{
+width:100%;
+height:100%;
+object-fit:cover;
+filter:brightness(.35) saturate(1.25);
+}
+
+.overlay{
+position:fixed;
+inset:0;
+z-index:-1;
+background:linear-gradient(to bottom,rgba(5,8,18,.45),rgba(5,8,18,.95));
+}
+
+.topbar{
+height:86px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:18px 28px;
+}
+
+.brand h1{
+font-size:34px;
+letter-spacing:2px;
+background:linear-gradient(90deg,#fff,var(--cyan),var(--gold));
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+.brand span{
+display:block;
+margin-top:5px;
+font-size:12px;
+color:#cbd5e1;
+letter-spacing:2px;
+}
+
+button{
+border:none;
+font-family:Rajdhani,sans-serif;
+font-weight:700;
+font-size:20px;
+color:white;
+cursor:pointer;
+background:linear-gradient(135deg,rgba(25,35,60,.96),rgba(35,50,80,.9));
+border:1px solid rgba(255,255,255,.12);
+transition:.2s;
+}
+
+button:hover{
+transform:translateY(-3px);
+border-color:rgba(0,229,255,.55);
+box-shadow:0 0 24px rgba(0,229,255,.18);
+}
+
+.back{
+padding:14px 18px;
+border-radius:12px;
+}
+
+.layout{
+width:min(1220px,calc(100% - 36px));
+margin:0 auto 30px;
+display:grid;
+grid-template-columns:250px 1fr;
+gap:18px;
+}
+
+.tabs{
+display:flex;
+flex-direction:column;
+gap:12px;
+}
+
+.tab{
+min-height:76px;
+padding:14px;
+border-radius:12px;
+text-align:left;
+display:grid;
+grid-template-columns:54px 1fr;
+align-items:center;
+gap:12px;
+}
+
+.tab.active{
+border-color:rgba(251,191,36,.75);
+box-shadow:0 0 28px rgba(251,191,36,.2);
+}
+
+.tab-text{
+display:block;
+}
+
+.tab-text strong{
+display:block;
+font-size:18px;
+}
+
+.tab-text span{
+display:block;
+margin-top:5px;
+font-size:13px;
+color:#cbd5e1;
+}
+
+.tab-logo{
+width:54px;
+height:54px;
+object-fit:contain;
+filter:drop-shadow(0 0 12px rgba(0,229,255,.28));
+}
+
+.panel{
+display:none;
+min-height:650px;
+padding:22px;
+border:1px solid rgba(255,255,255,.11);
+background:var(--panel);
+box-shadow:0 16px 50px rgba(0,0,0,.38);
+}
+
+.panel.active{
+display:block;
+}
+
+.panel-head{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:18px;
+margin-bottom:18px;
+}
+
+.panel-head h2{
+font-size:28px;
+color:var(--cyan);
+}
+
+.panel-title{
+display:flex;
+align-items:center;
+gap:14px;
+}
+
+.panel-logo{
+width:74px;
+height:74px;
+object-fit:contain;
+filter:drop-shadow(0 0 18px rgba(251,191,36,.32));
+}
+
+.stats{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+
+.stat{
+min-width:110px;
+padding:10px 12px;
+background:rgba(255,255,255,.06);
+border:1px solid rgba(255,255,255,.1);
+text-align:center;
+}
+
+.stat b{
+display:block;
+font-size:22px;
+color:var(--gold);
+}
+
+.stat span{
+font-size:11px;
+color:#cbd5e1;
+}
+
+/* GUITAR */
+
+.guitar-stage{
+position:relative;
+height:500px;
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:10px;
+padding:12px;
+overflow:hidden;
+background:linear-gradient(to bottom,rgba(0,229,255,.07),rgba(0,0,0,.36));
+border:1px solid rgba(0,229,255,.18);
+}
+
+.lane{
+position:relative;
+overflow:hidden;
+border:1px solid rgba(255,255,255,.1);
+background:rgba(255,255,255,.045);
+}
+
+.lane::after{
+content:attr(data-key);
+position:absolute;
+left:50%;
+bottom:18px;
+width:54px;
+height:54px;
+display:flex;
+align-items:center;
+justify-content:center;
+transform:translateX(-50%);
+border-radius:50%;
+background:rgba(0,0,0,.65);
+border:2px solid rgba(0,229,255,.55);
+font-size:23px;
+font-weight:800;
+}
+
+.lane.hit{
+animation:laneHit .22s ease;
+}
+
+@keyframes laneHit{
+0%{box-shadow:inset 0 0 0 rgba(0,229,255,0);}
+45%{box-shadow:inset 0 0 42px rgba(0,229,255,.58);}
+100%{box-shadow:inset 0 0 0 rgba(0,229,255,0);}
+}
+
+.guitar-pop{
+position:absolute;
+left:50%;
+bottom:138px;
+transform:translateX(-50%);
+font-family:'Press Start 2P',cursive;
+font-size:15px;
+color:var(--gold);
+text-shadow:0 0 14px rgba(251,191,36,.9);
+pointer-events:none;
+animation:guitarPop .45s ease forwards;
+}
+
+@keyframes guitarPop{
+0%{
+opacity:0;
+transform:translate(-50%,18px) scale(.65);
+}
+35%{
+opacity:1;
+transform:translate(-50%,0) scale(1.15);
+}
+100%{
+opacity:0;
+transform:translate(-50%,-34px) scale(.92);
+}
+}
+
+.hit-line{
+position:absolute;
+left:0;
+right:0;
+bottom:82px;
+height:4px;
+background:var(--gold);
+box-shadow:0 0 18px var(--gold);
+}
+
+.note{
+position:absolute;
+left:50%;
+top:0;
+width:56px;
+height:56px;
+transform:translate(-50%,-70px);
+border-radius:50%;
+background:var(--cyan);
+box-shadow:0 0 22px rgba(0,229,255,.65);
+}
+
+.lane:nth-child(2) .note{background:#a78bfa;box-shadow:0 0 22px rgba(167,139,250,.65);}
+.lane:nth-child(3) .note{background:#22c55e;box-shadow:0 0 22px rgba(34,197,94,.65);}
+.lane:nth-child(4) .note{background:#fbbf24;box-shadow:0 0 22px rgba(251,191,36,.65);}
+
+.lane-btns{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:10px;
+margin-top:12px;
+}
+
+.lane-btns button{
+height:54px;
+border-radius:10px;
+}
+
+.guitar-options{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:12px;
+margin-top:12px;
+flex-wrap:wrap;
+}
+
+.difficulty-buttons{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+
+.difficulty-buttons button{
+padding:10px 14px;
+border-radius:10px;
+font-size:17px;
+}
+
+.difficulty-buttons button.active{
+border-color:rgba(251,191,36,.75);
+box-shadow:0 0 24px rgba(251,191,36,.2);
+}
+
+.guitar-message{
+min-height:38px;
+padding:9px 12px;
+font-family:Rajdhani,sans-serif;
+font-size:20px;
+background:rgba(255,255,255,.055);
+border:1px solid rgba(255,255,255,.1);
+}
+
+/* NUMBER */
+
+.number-game{
+min-height:500px;
+display:grid;
+grid-template-columns:1fr 300px;
+gap:20px;
+align-items:center;
+}
+
+.guess-box{
+display:flex;
+flex-direction:column;
+gap:18px;
+align-items:center;
+justify-content:center;
+min-height:420px;
+border:1px solid rgba(0,229,255,.18);
+background:rgba(255,255,255,.04);
+}
+
+.guess-box input{
+width:min(360px,90%);
+padding:18px;
+font-family:Orbitron,sans-serif;
+font-size:28px;
+text-align:center;
+color:white;
+background:rgba(0,0,0,.45);
+border:1px solid rgba(255,255,255,.18);
+outline:none;
+}
+
+.guess-box input:focus{
+border-color:var(--cyan);
+box-shadow:0 0 22px rgba(0,229,255,.18);
+}
+
+.hint{
+min-height:46px;
+font-size:30px;
+font-family:Rajdhani,sans-serif;
+font-weight:700;
+color:var(--gold);
+}
+
+.side-art{
+display:flex;
+align-items:center;
+justify-content:center;
+min-height:420px;
+}
+
+.side-art img{
+max-width:100%;
+max-height:390px;
+object-fit:contain;
+filter:drop-shadow(0 0 22px rgba(0,229,255,.35));
+}
+
+/* MOLE */
+
+.mole-game{
+display:grid;
+grid-template-columns:1fr 260px;
+gap:18px;
+}
+
+.holes{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:14px;
+min-height:500px;
+}
+
+.hole{
+position:relative;
+overflow:hidden;
+min-height:150px;
+border:1px solid rgba(255,255,255,.1);
+background:
+radial-gradient(ellipse at bottom,rgba(0,0,0,.75) 0 32%,transparent 34%),
+rgba(255,255,255,.045);
+cursor:pointer;
+}
+
+.mole{
+position:absolute;
+left:50%;
+bottom:-88px;
+width:128px;
+height:128px;
+object-fit:contain;
+transform:translateX(-50%);
+transition:.16s;
+filter:drop-shadow(0 0 14px rgba(251,191,36,.38));
+pointer-events:none;
+}
+
+.hole.up .mole{
+bottom:18px;
+}
+
+.hole.boss .mole{
+width:154px;
+height:154px;
+}
+
+.hole.smashed .mole{
+animation:moleSmash .26s ease forwards;
+}
+
+@keyframes moleSmash{
+0%{
+transform:translateX(-50%) scale(1);
+filter:drop-shadow(0 0 14px rgba(251,191,36,.38));
+}
+45%{
+transform:translateX(-50%) scale(1.24) rotate(-8deg);
+filter:drop-shadow(0 0 28px rgba(239,68,68,.86));
+}
+100%{
+transform:translateX(-50%) scale(.2) rotate(15deg);
+opacity:0;
+}
+}
+
+.mole-points{
+position:absolute;
+left:50%;
+top:28px;
+transform:translateX(-50%);
+font-family:'Press Start 2P',cursive;
+font-size:14px;
+color:var(--gold);
+text-shadow:0 0 14px rgba(251,191,36,.9);
+pointer-events:none;
+animation:molePoints .45s ease forwards;
+}
+
+@keyframes molePoints{
+0%{
+opacity:0;
+transform:translate(-50%,20px) scale(.8);
+}
+45%{
+opacity:1;
+transform:translate(-50%,0) scale(1.1);
+}
+100%{
+opacity:0;
+transform:translate(-50%,-42px) scale(.9);
+}
+}
+
+.mole-controls{
+display:flex;
+flex-direction:column;
+gap:12px;
+}
+
+.mole-controls button,
+.guess-box button,
+.guitar-controls button{
+padding:14px 18px;
+border-radius:10px;
+}
+
+.message{
+padding:16px;
+font-family:Rajdhani,sans-serif;
+font-size:22px;
+line-height:1.35;
+background:rgba(255,255,255,.055);
+border:1px solid rgba(255,255,255,.1);
+}
+
+@media(max-width:900px){
+.topbar{
+height:auto;
+align-items:flex-start;
+gap:12px;
+}
+
+.layout,
+.number-game,
+.mole-game{
+grid-template-columns:1fr;
+}
+
+.tabs{
+display:grid;
+grid-template-columns:1fr;
+}
+
+.panel{
+min-height:auto;
+}
+
+.guitar-stage{
+height:420px;
+}
+
+.side-art{
+display:none;
+}
+
+.panel-head{
+align-items:flex-start;
+flex-direction:column;
+}
+}
+</style>
+</head>
+
+<body>
+<div class="bg">
+<img src="https://media.discordapp.net/attachments/1496836122938970123/1508796842731769856/New_Piskel_11.png?ex=6a16d80f&is=6a15868f&hm=9dd3d5b5c6e51e83dc9db9167afb94c5512335f41f385ffd11180eeed273f31f&=&format=webp&quality=lossless&width=1074&height=695" alt="">
+</div>
+<div class="overlay"></div>
+
+<header class="topbar">
+<div class="brand">
+<h1>MINI-JEUX</h1>
+<span>CODEQUEST BONUS ARCADE</span>
+</div>
+<button class="back" onclick="window.location.href='menu.html'">RETOUR MENU</button>
+</header>
+
+<main class="layout">
+<nav class="tabs">
+<button class="tab active" data-panel="guitar"><img class="tab-logo" src="src/img/guitar_hero.webp" alt=""><span class="tab-text"><strong>Guitar Hero</strong><span>D F G H au bon moment</span></span></button>
+<button class="tab" data-panel="number"><img class="tab-logo" src="src/img/juste_chiffre.webp" alt=""><span class="tab-text"><strong>Juste Chiffre</strong><span>Trouve le nombre mystere</span></span></button>
+<button class="tab" data-panel="mole"><img class="tab-logo" src="src/img/tape_taupe.webp" alt=""><span class="tab-text"><strong>Tape Taupe</strong><span>Clique les cibles avant la fin</span></span></button>
+</nav>
+
+<section class="panel active" id="guitar">
+<div class="panel-head">
+<div class="panel-title">
+<img class="panel-logo" src="src/img/guitar_hero.webp" alt="">
+<h2>Guitar Hero</h2>
+</div>
+<div class="stats">
+<div class="stat"><b id="guitarScore">0</b><span>SCORE</span></div>
+<div class="stat"><b id="guitarCombo">0</b><span>COMBO</span></div>
+<div class="stat"><b id="guitarMiss">0</b><span>RATES</span></div>
+<div class="stat"><b id="guitarTime">60</b><span>TEMPS</span></div>
+</div>
+</div>
+<div class="guitar-stage" id="guitarStage">
+<div class="lane" data-key="D"><div class="hit-line"></div></div>
+<div class="lane" data-key="F"><div class="hit-line"></div></div>
+<div class="lane" data-key="G"><div class="hit-line"></div></div>
+<div class="lane" data-key="H"><div class="hit-line"></div></div>
+</div>
+<div class="lane-btns">
+<button data-hit="0">D</button>
+<button data-hit="1">F</button>
+<button data-hit="2">G</button>
+<button data-hit="3">H</button>
+</div>
+<div class="guitar-options">
+<div class="difficulty-buttons" id="guitarDifficulty">
+<button class="active" data-difficulty="easy">FACILE</button>
+<button data-difficulty="normal">NORMAL</button>
+<button data-difficulty="hard">DIFFICILE</button>
+</div>
+<div class="guitar-controls">
+<button id="guitarStart">LANCER</button>
+<button id="guitarStop">STOP</button>
+</div>
+</div>
+<div class="guitar-message" id="guitarMessage">Choisis une difficulté puis lance la musique.</div>
+</section>
+
+<section class="panel" id="number">
+<div class="panel-head">
+<div class="panel-title">
+<img class="panel-logo" src="src/img/juste_chiffre.webp" alt="">
+<h2>Juste Chiffre</h2>
+</div>
+<div class="stats">
+<div class="stat"><b id="guessCount">0</b><span>ESSAIS</span></div>
+<div class="stat"><b id="bestGuess">-</b><span>MEILLEUR</span></div>
+</div>
+</div>
+<div class="number-game">
+<div class="guess-box">
+<div class="message">Un chiffre entre 1 et 100 est choisi. Entre une proposition, le jeu te dit si c'est plus ou moins.</div>
+<input id="guessInput" type="number" min="1" max="100" placeholder="1 - 100">
+<div class="hint" id="guessHint">Pret ?</div>
+<button id="guessButton">VALIDER</button>
+<button id="newNumber">NOUVEAU CHIFFRE</button>
+</div>
+<div class="side-art">
+<img src="src/img/juste_chiffre.webp" alt="">
+</div>
+</div>
+</section>
+
+<section class="panel" id="mole">
+<div class="panel-head">
+<div class="panel-title">
+<img class="panel-logo" src="src/img/tape_taupe.webp" alt="">
+<h2>Tape Taupe</h2>
+</div>
+<div class="stats">
+<div class="stat"><b id="moleScore">0</b><span>SCORE</span></div>
+<div class="stat"><b id="moleTime">30</b><span>TEMPS</span></div>
+</div>
+</div>
+<div class="mole-game">
+<div class="holes" id="holes"></div>
+<div class="mole-controls">
+<button id="moleStart">LANCER</button>
+<button id="moleStop">STOP</button>
+<div class="message" id="moleMessage">Appuie sur lancer, puis clique les cibles qui sortent.</div>
+</div>
+</div>
+</section>
+</main>
+
+<script>
+const tabs = document.querySelectorAll(".tab");
+const panels = document.querySelectorAll(".panel");
+
+tabs.forEach(tab=>{
+tab.addEventListener("click",()=>{
+tabs.forEach(item=>item.classList.remove("active"));
+panels.forEach(panel=>panel.classList.remove("active"));
+tab.classList.add("active");
+document.getElementById(tab.dataset.panel).classList.add("active");
+});
+});
+
+// Guitar Hero
+const lanes = Array.from(document.querySelectorAll(".lane"));
+const guitarKeys = ["d","f","g","h"];
+const guitarDifficulties = {
+easy:{label:"Facile",duration:60,spawn:820,speed:7},
+normal:{label:"Normal",duration:75,spawn:650,speed:9},
+hard:{label:"Difficile",duration:105,spawn:500,speed:11}
+};
+let guitarRunning = false;
+let guitarTimer = null;
+let guitarLoop = null;
+let guitarCountdown = null;
+let guitarDifficulty = "easy";
+let guitarTimeLeft = guitarDifficulties.easy.duration;
+let notes = [];
+let guitarScore = 0;
+let guitarCombo = 0;
+let guitarMiss = 0;
+
+function updateGuitarStats(){
+document.getElementById("guitarScore").innerText = guitarScore;
+document.getElementById("guitarCombo").innerText = guitarCombo;
+document.getElementById("guitarMiss").innerText = guitarMiss;
+document.getElementById("guitarTime").innerText = guitarTimeLeft;
+}
+
+function spawnNote(){
+let laneIndex = Math.floor(Math.random() * lanes.length);
+let note = document.createElement("div");
+note.className = "note";
+lanes[laneIndex].appendChild(note);
+notes.push({el:note,lane:laneIndex,y:-70});
+}
+
+function showGuitarHit(laneIndex){
+let lane = lanes[laneIndex];
+let pop = document.createElement("div");
+pop.className = "guitar-pop";
+pop.innerText = "GOOD!";
+lane.classList.add("hit");
+lane.appendChild(pop);
+
+setTimeout(()=>{
+lane.classList.remove("hit");
+pop.remove();
+},450);
+}
+
+function hitLane(laneIndex){
+if(!guitarRunning){
+return;
+}
+
+let target = notes
+.filter(note=>note.lane === laneIndex)
+.sort((a,b)=>b.y - a.y)[0];
+
+if(target && target.y >= 345 && target.y <= 435){
+target.el.remove();
+notes = notes.filter(note=>note !== target);
+guitarCombo++;
+guitarScore += 100 + guitarCombo * 5;
+showGuitarHit(laneIndex);
+}else{
+guitarCombo = 0;
+guitarMiss++;
+}
+
+updateGuitarStats();
+}
+
+function startGuitar(){
+stopGuitar();
+let settings = guitarDifficulties[guitarDifficulty];
+guitarRunning = true;
+notes = [];
+guitarScore = 0;
+guitarCombo = 0;
+guitarMiss = 0;
+guitarTimeLeft = settings.duration;
+updateGuitarStats();
+document.getElementById("guitarMessage").innerText = settings.label + " - tiens le rythme jusqu'a la fin.";
+guitarTimer = setInterval(spawnNote, settings.spawn);
+guitarCountdown = setInterval(()=>{
+guitarTimeLeft--;
+updateGuitarStats();
+
+if(guitarTimeLeft <= 0){
+finishGuitar();
+}
+},1000);
+guitarLoop = setInterval(()=>{
+notes.forEach(note=>{
+note.y += settings.speed;
+note.el.style.transform = "translate(-50%," + note.y + "px)";
+});
+
+notes.filter(note=>note.y > 500).forEach(note=>{
+note.el.remove();
+guitarCombo = 0;
+guitarMiss++;
+});
+
+notes = notes.filter(note=>note.y <= 500);
+updateGuitarStats();
+},30);
+}
+
+function clearGuitarIntervals(){
+guitarRunning = false;
+clearInterval(guitarTimer);
+clearInterval(guitarLoop);
+clearInterval(guitarCountdown);
+}
+
+function clearGuitarNotes(){
+notes.forEach(note=>note.el.remove());
+notes = [];
+}
+
+function stopGuitar(){
+clearGuitarIntervals();
+clearGuitarNotes();
+document.getElementById("guitarMessage").innerText = "Pause. Score : " + guitarScore;
+}
+
+function finishGuitar(){
+clearGuitarIntervals();
+clearGuitarNotes();
+guitarTimeLeft = 0;
+updateGuitarStats();
+document.getElementById("guitarMessage").innerText = "Temps fini. Score : " + guitarScore;
+}
+
+document.getElementById("guitarStart").addEventListener("click",startGuitar);
+document.getElementById("guitarStop").addEventListener("click",stopGuitar);
+document.querySelectorAll("[data-difficulty]").forEach(button=>{
+button.addEventListener("click",()=>{
+if(guitarRunning){
+return;
+}
+
+document.querySelectorAll("[data-difficulty]").forEach(item=>item.classList.remove("active"));
+button.classList.add("active");
+guitarDifficulty = button.dataset.difficulty;
+guitarTimeLeft = guitarDifficulties[guitarDifficulty].duration;
+updateGuitarStats();
+document.getElementById("guitarMessage").innerText = guitarDifficulties[guitarDifficulty].label + " selectionne.";
+});
+});
+document.querySelectorAll("[data-hit]").forEach(button=>{
+button.addEventListener("click",()=>hitLane(Number(button.dataset.hit)));
+});
+
+document.addEventListener("keydown",event=>{
+let key = event.key.toLowerCase();
+let laneIndex = guitarKeys.indexOf(key);
+
+if(laneIndex !== -1){
+hitLane(laneIndex);
+}
+});
+
+// Juste Chiffre
+let secretNumber = 0;
+let guessCount = 0;
+let bestGuess = Number(localStorage.getItem("bestGuess")) || 0;
+
+function updateBestGuess(){
+document.getElementById("bestGuess").innerText = bestGuess ? bestGuess : "-";
+}
+
+function newSecretNumber(){
+secretNumber = Math.floor(Math.random() * 100) + 1;
+guessCount = 0;
+document.getElementById("guessCount").innerText = guessCount;
+document.getElementById("guessHint").innerText = "Nouveau chiffre pret";
+document.getElementById("guessInput").value = "";
+updateBestGuess();
+}
+
+function guessNumber(){
+let input = document.getElementById("guessInput");
+let value = Number(input.value);
+let hint = document.getElementById("guessHint");
+
+if(!value || value < 1 || value > 100){
+hint.innerText = "Entre 1 a 100";
+return;
+}
+
+guessCount++;
+document.getElementById("guessCount").innerText = guessCount;
+
+if(value < secretNumber){
+hint.innerText = "C'est plus";
+}
+
+if(value > secretNumber){
+hint.innerText = "C'est moins";
+}
+
+if(value === secretNumber){
+hint.innerText = "Bravo ! Trouve en " + guessCount + " essais";
+
+if(!bestGuess || guessCount < bestGuess){
+bestGuess = guessCount;
+localStorage.setItem("bestGuess", String(bestGuess));
+updateBestGuess();
+}
+}
+}
+
+document.getElementById("guessButton").addEventListener("click",guessNumber);
+document.getElementById("newNumber").addEventListener("click",newSecretNumber);
+document.getElementById("guessInput").addEventListener("keydown",event=>{
+if(event.key === "Enter"){
+guessNumber();
+}
+});
+newSecretNumber();
+
+// Tape Taupe
+const holes = document.getElementById("holes");
+let moleActive = -1;
+let activeEnemy = null;
+let moleScore = 0;
+let moleTime = 30;
+let molePopTimer = null;
+let moleClock = null;
+
+const moleEnemies = [
+{name:"HTML TITAN",img:"src/img/HTML_Troll.webp",points:1,boss:false},
+{name:"MARKDOWN ENEMY",img:"src/img/mardown_enemie.webp",points:1,boss:false},
+{name:"PYTHON ENEMY",img:"src/img/python_enemie.webp",points:2,boss:false},
+{name:"PYTHON BOSS",img:"src/img/python_enemie.webp",points:4,boss:true},
+{name:"JAVASCRIPT BOSS",img:"src/img/javascript_boss.webp",points:5,boss:true}
+];
+
+for(let i=0;i<9;i++){
+let hole = document.createElement("div");
+hole.className = "hole";
+hole.dataset.index = i;
+hole.innerHTML = '<img class="mole" src="src/img/HTML_Troll.webp" alt="">';
+hole.addEventListener("click",()=>{
+if(Number(hole.dataset.index) === moleActive){
+let points = activeEnemy ? activeEnemy.points : 1;
+moleScore += points;
+document.getElementById("moleScore").innerText = moleScore;
+hole.classList.add("smashed");
+showMolePoints(hole, points);
+
+setTimeout(()=>{
+hole.classList.remove("smashed");
+hole.classList.remove("up");
+hole.classList.remove("boss");
+},240);
+
+moleActive = -1;
+activeEnemy = null;
+}
+});
+holes.appendChild(hole);
+}
+
+function showMolePoints(hole, points){
+let pop = document.createElement("div");
+pop.className = "mole-points";
+pop.innerText = "+" + points;
+hole.appendChild(pop);
+
+setTimeout(()=>{
+pop.remove();
+},450);
+}
+
+function popMole(){
+document.querySelectorAll(".hole").forEach(hole=>{
+hole.classList.remove("up");
+hole.classList.remove("boss");
+hole.classList.remove("smashed");
+});
+moleActive = Math.floor(Math.random() * 9);
+activeEnemy = moleEnemies[Math.floor(Math.random() * moleEnemies.length)];
+
+let hole = document.querySelector('.hole[data-index="' + moleActive + '"]');
+let img = hole.querySelector(".mole");
+
+img.src = activeEnemy.img;
+img.alt = activeEnemy.name;
+hole.classList.toggle("boss", activeEnemy.boss);
+hole.classList.add("up");
+}
+
+function startMole(){
+stopMole();
+moleScore = 0;
+moleTime = 30;
+moleActive = -1;
+activeEnemy = null;
+document.getElementById("moleScore").innerText = moleScore;
+document.getElementById("moleTime").innerText = moleTime;
+document.getElementById("moleMessage").innerText = "Tape les ennemis. Les boss valent plus de points.";
+popMole();
+molePopTimer = setInterval(popMole, 720);
+moleClock = setInterval(()=>{
+moleTime--;
+document.getElementById("moleTime").innerText = moleTime;
+
+if(moleTime <= 0){
+stopMole();
+document.getElementById("moleMessage").innerText = "Temps fini. Score : " + moleScore;
+}
+},1000);
+}
+
+function stopMole(){
+clearInterval(molePopTimer);
+clearInterval(moleClock);
+document.querySelectorAll(".hole").forEach(hole=>{
+hole.classList.remove("up");
+hole.classList.remove("boss");
+hole.classList.remove("smashed");
+});
+moleActive = -1;
+activeEnemy = null;
+}
+
+document.getElementById("moleStart").addEventListener("click",startMole);
+document.getElementById("moleStop").addEventListener("click",()=>{
+stopMole();
+document.getElementById("moleMessage").innerText = "Pause. Score : " + moleScore;
+});
+</script>
+</body>
+</html>

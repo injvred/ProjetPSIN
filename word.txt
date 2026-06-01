@@ -1,0 +1,190 @@
+html : <!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CodeQuest - Prologue</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: black;
+    color: white;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* CAMERA EFFECT */
+.scene {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: scale(1.1);
+    animation: cameraIn 2s ease forwards;
+}
+
+@keyframes cameraIn {
+    from { transform: scale(1.25); filter: blur(6px); }
+    to { transform: scale(1.0); filter: blur(0); }
+}
+
+.box {
+    width: 70%;
+    max-width: 800px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 40px;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    text-align: center;
+}
+
+h1 {
+    color: #a29bfe;
+    margin-bottom: 20px;
+}
+
+#text {
+    min-height: 120px;
+    font-size: 1.2rem;
+    line-height: 1.6;
+}
+
+.choices {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+button {
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    background: #3b3b55;
+    color: white;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: #4b4b70;
+}
+
+/* FLASH */
+.flash {
+    position: fixed;
+    inset: 0;
+    background: white;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.flash.active {
+    animation: flashAnim 0.6s ease;
+}
+
+@keyframes flashAnim {
+    0% { opacity: 0; }
+    30% { opacity: 1; }
+    100% { opacity: 0; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="scene">
+    <div class="box">
+
+        <h1>⚔️ CodeQuest</h1>
+
+        <div id="text"></div>
+
+        <div class="choices" id="choices"></div>
+
+    </div>
+</div>
+
+<div class="flash" id="flash"></div>
+
+<script>
+const textBox = document.getElementById("text");
+const choicesBox = document.getElementById("choices");
+const flash = document.getElementById("flash");
+
+function typeText(text, cb) {
+
+    textBox.innerHTML = "";
+    let i = 0;
+
+    const interval = setInterval(() => {
+
+        textBox.innerHTML += text[i];
+        i++;
+
+        if (i >= text.length) {
+            clearInterval(interval);
+            if (cb) cb();
+        }
+
+    }, 25);
+}
+
+/* ================= DIALOGUES ================= */
+
+function step1() {
+
+    typeText("Tu ouvres les yeux dans un monde instable de code...");
+
+    setTimeout(() => {
+        choicesBox.innerHTML = `
+            <button onclick="step2()">Continuer</button>
+            <button onclick="step2()">Observer l’environnement</button>
+        `;
+    }, 1200);
+}
+
+function step2() {
+
+    choicesBox.innerHTML = "";
+
+    typeText("Les entités HTML, CSS et Markdown ont perdu le contrôle...");
+
+    setTimeout(() => {
+        choicesBox.innerHTML = `
+            <button onclick="step3()">Je dois les arrêter</button>
+            <button onclick="step3()">Compris...</button>
+        `;
+    }, 1500);
+}
+
+function step3() {
+
+    choicesBox.innerHTML = "";
+
+    typeText("Prépare-toi. Le combat commence.");
+
+    setTimeout(() => {
+        flash.classList.add("active");
+
+        setTimeout(() => {
+            window.location.href = "game.html";
+        }, 600);
+
+    }, 1500);
+}
+
+step1();
+</script>
+
+</body>
+</html>

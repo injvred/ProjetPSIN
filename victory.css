@@ -1,0 +1,150 @@
+/* =========================
+   ROUTE LINE
+========================= */
+
+.route{
+position:absolute;
+width:85%;
+height:6px;
+background:linear-gradient(90deg,
+transparent,
+rgba(0,229,255,.4),
+rgba(139,92,246,.6),
+rgba(0,229,255,.4),
+transparent
+);
+
+border-radius:50px;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+filter:drop-shadow(0 0 15px rgba(0,229,255,.25));
+}
+
+/* =========================
+   NODE WRAPPER
+========================= */
+
+.nodes{
+position:absolute;
+width:90%;
+display:flex;
+justify-content:space-between;
+align-items:center;
+top:44%;
+left:50%;
+transform:translate(-50%,-50%);
+}
+
+/* =========================
+   NODE (IMAGE / BUTTON STYLE)
+========================= */
+
+.node{
+width:90px;
+height:90px;
+
+background:rgba(15,23,42,.75);
+border:1px solid rgba(255,255,255,.12);
+border-radius:18px;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+cursor:pointer;
+
+backdrop-filter:blur(10px);
+
+transition:.25s;
+
+position:relative;
+
+box-shadow:0 0 25px rgba(0,0,0,.5);
+}
+
+/* hover */
+.node:hover{
+transform:translateY(-18px) scale(1.15);
+border-color:rgba(0,229,255,.7);
+box-shadow:0 0 40px rgba(0,229,255,.25);
+}
+
+/* =========================
+   IMAGE INSIDE NODE (SI TU UTILISES IMG)
+========================= */
+
+.node img{
+width:65px;
+height:65px;
+object-fit:contain;
+filter:drop-shadow(0 0 10px rgba(0,229,255,.4));
+transition:.25s;
+}
+
+.node:hover img{
+transform:scale(1.1);
+filter:drop-shadow(0 0 18px rgba(0,229,255,.7));
+}
+
+/* =========================
+   🔵 PETIT CERCLE SUR LA ROUTE
+========================= */
+
+.dot{
+position:absolute;
+bottom:-14px;
+left:50%;
+transform:translateX(-50%);
+
+width:10px;
+height:10px;
+border-radius:50%;
+
+background:var(--cyan);
+box-shadow:0 0 14px var(--cyan);
+
+animation:pulseDot 1.8s infinite;
+}
+
+@keyframes pulseDot{
+0%{transform:translateX(-50%) scale(1);}
+50%{transform:translateX(-50%) scale(1.4);}
+100%{transform:translateX(-50%) scale(1);}
+}
+
+/* =========================
+   NUM / TEXT (SI TU EN AS)
+========================= */
+
+.num{
+font-size:18px;
+font-weight:800;
+color:var(--cyan);
+margin-bottom:4px;
+}
+
+.node b{
+font-size:12px;
+letter-spacing:1px;
+}
+
+.node span{
+font-size:10px;
+color:#94a3b8;
+}
+
+/* =========================
+   BOSS LEVEL
+========================= */
+
+.n8{
+width:120px;
+height:120px;
+border:2px solid rgba(251,191,36,.7);
+box-shadow:0 0 40px rgba(251,191,36,.25);
+}
+
+.n8 .num{
+color:var(--gold);
+}

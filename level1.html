@@ -1,0 +1,1118 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>CodeQuest RPG</title>
+
+<!-- FONTS -->
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&family=Audiowide&family=Rajdhani:wght@500;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+--bg:#070b14;
+--panel:#101827;
+--cyan:#00e5ff;
+--purple:#8b5cf6;
+--green:#22c55e;
+--red:#ef4444;
+--text:#eaf2ff;
+--muted:#94a3b8;
+}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:'Orbitron',sans-serif;
+background:
+radial-gradient(circle at top,#172033 0%,#070b14 55%);
+color:white;
+overflow:hidden;
+}
+
+/* GAME */
+
+.game{
+display:flex;
+height:100vh;
+width:100%;
+}
+
+/* LEFT */
+
+.left{
+width:100%;
+position:relative;
+overflow:hidden;
+background:
+linear-gradient(rgba(4, 8, 20, 0),rgba(4, 8, 20, 0)),
+url("https://media.discordapp.net/attachments/1496836122938970123/1508798208116133959/Forest-entrance-pixel-art-style3.png?ex=6a16d954&is=6a1587d4&hm=dcc3d919caa43a37c4cbbfd4655c73b022744e7decd07f7bc793303e6a61616b&=&format=webp&quality=lossless&width=1228&height=691");
+background-size:cover;
+background-position:center;
+}
+
+
+.left::before{
+content:"";
+position:absolute;
+inset:0;
+background:
+linear-gradient(rgba(0,229,255,.08) 1px,transparent 1px),
+linear-gradient(90deg,rgba(0,229,255,.08) 1px,transparent 1px);
+background-size:40px 40px;
+}
+
+/* TOPBAR */
+
+.topbar{
+position:absolute;
+top:20px;
+left:20px;
+right:20px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+z-index:120;
+}
+
+/* LOGO */
+
+.logo{
+display:flex;
+align-items:center;
+gap:14px;
+}
+
+.logo-icon{
+width:62px;
+height:62px;
+border-radius:18px;
+background:
+linear-gradient(135deg,var(--cyan),var(--purple));
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:28px;
+font-weight:800;
+color:white;
+box-shadow:0 0 30px rgba(0,229,255,.45);
+}
+
+.logo-text h1{
+font-size:20px;
+font-weight:800;
+letter-spacing:2px;
+background:linear-gradient(to right,#fff,var(--cyan));
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+.logo-text span{
+font-size:12px;
+color:var(--muted);
+letter-spacing:3px;
+}
+.audio-control{
+margin-top:10px;
+width:270px;
+padding:12px 14px;
+border-radius:14px;
+background:rgba(8,14,30,.74);
+border:1px solid rgba(0,229,255,.18);
+box-shadow:0 0 18px rgba(0,229,255,.12);
+}
+
+.audio-label{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:7px;
+font-size:10px;
+font-family:'Press Start 2P',cursive;
+letter-spacing:1px;
+color:var(--cyan);
+}
+
+.audio-label::after{
+content:attr(data-value);
+font-family:'Orbitron',sans-serif;
+font-size:11px;
+color:var(--muted);
+}
+
+.music-slider{
+width:100%;
+height:9px;
+appearance:none;
+-webkit-appearance:none;
+border-radius:999px;
+outline:none;
+background:linear-gradient(90deg,var(--cyan) 0%,var(--purple) 50%,#1e293b 50%);
+cursor:pointer;
+}
+
+.music-slider::-webkit-slider-thumb{
+appearance:none;
+-webkit-appearance:none;
+width:24px;
+height:24px;
+border-radius:50%;
+background:#fff;
+border:3px solid var(--cyan);
+box-shadow:0 0 18px rgba(0,229,255,.75);
+}
+
+.music-slider::-moz-range-thumb{
+width:20px;
+height:20px;
+border-radius:50%;
+background:#fff;
+border:3px solid var(--cyan);
+box-shadow:0 0 18px rgba(0,229,255,.75);
+}
+
+/* MODE */
+
+.mode{
+padding:12px 18px;
+border-radius:14px;
+background:rgba(255,255,255,.05);
+border:1px solid rgba(255,255,255,.08);
+color:var(--cyan);
+font-size:14px;
+}
+
+/* HERO */
+
+.hero-area{
+position:absolute;
+left:80px;
+bottom:70px;
+z-index:3;
+}
+
+.hero{
+width:460px;
+transition:.2s;
+filter:drop-shadow(0 0 20px rgba(0,229,255,.4));
+}
+
+.hero.hit{
+transform:translateX(-15px) rotate(-5deg);
+}
+
+.hero.attack{
+animation:heroAttack .35s ease;
+}
+
+@keyframes heroAttack{
+50%{transform:translateX(28px) scale(1.04);}
+}
+
+.attack-effect{
+position:fixed;
+z-index:120;
+pointer-events:none;
+object-fit:contain;
+}
+
+.fireball-effect{
+width:190px;
+height:190px;
+left:var(--start-x);
+top:var(--start-y);
+animation:fireballMove .55s ease-out forwards;
+}
+
+@keyframes fireballMove{
+0%{
+opacity:1;
+transform:translate(-50%,-50%) scale(.9);
+}
+100%{
+opacity:0;
+transform:translate(
+calc(var(--end-x) - var(--start-x) - 50%),
+calc(var(--end-y) - var(--start-y) - 50%)
+) scale(1.8);
+}
+}
+
+.slash-effect{
+width:320px;
+height:320px;
+left:var(--end-x);
+top:var(--end-y);
+animation:slashHit .45s ease-out forwards;
+}
+
+@keyframes slashHit{
+0%{
+opacity:0;
+transform:translate(-50%,-50%) scale(.55) rotate(-25deg);
+}
+35%{
+opacity:1;
+transform:translate(-50%,-50%) scale(1.45) rotate(8deg);
+}
+100%{
+opacity:0;
+transform:translate(-50%,-50%) scale(1.75) rotate(18deg);
+}
+}
+
+/* HERO CARD */
+
+.hero-card{
+margin-top:20px;
+padding:18px;
+width:320px;
+border-radius:20px;
+background:rgba(15,23,42,.8);
+backdrop-filter:blur(12px);
+border:1px solid rgba(255,255,255,.08);
+}
+
+.hero-name{
+display:flex;
+justify-content:space-between;
+margin-bottom:12px;
+}
+
+.hero-name strong{
+font-size:28px;
+font-family:'Audiowide',sans-serif;
+}
+
+.hero-name span{
+font-family:'Press Start 2P',cursive;
+font-size:12px;
+color:var(--cyan);
+}
+
+/* HP */
+
+.hp-wrap{
+height:16px;
+background:#1e293b;
+border-radius:20px;
+overflow:hidden;
+}
+
+#heroHp{
+height:100%;
+width:100%;
+background:
+linear-gradient(to right,#22c55e,#86efac);
+transition:.3s;
+}
+
+/* ENEMIES */
+
+.enemies{
+position:absolute;
+width:900px;
+height:900px;
+left:75%;
+top:52%;
+transform:translate(-50%,-40%);
+
+display:flex;
+flex-direction:column;
+gap:24px;
+z-index:4;
+align-items:center;
+}
+
+.enemy{
+width:320px;
+padding:20px;
+border-radius:0px;
+border:1px solid rgba(255,255,255,.08);
+
+transition:.3s;
+}
+
+.enemy.dead{
+opacity:0;
+transform:scale(.2);
+pointer-events:none;
+}
+
+.enemy img{
+width:350px;
+height:350px;
+display:block;
+margin:auto;
+object-fit:contain;
+}
+
+.enemy-title{
+margin-top:14px;
+text-align:center;
+font-size:18px;
+line-height:1.6;
+font-family:'Press Start 2P',cursive;
+}
+
+/* HP */
+
+.hpbar{
+margin-top:14px;
+margin-right:-90px;
+height:18px;
+background:#1e293b;
+border-radius:20px;
+overflow:hidden;
+}
+
+.hp{
+height:120%;
+width:150%;
+background:
+linear-gradient(to right,#ef4444,#ff7b7b);
+transition:.3s;
+}
+
+/* QUESTION BAR */
+
+.question-bar{
+position:absolute;
+top:20px;
+left:40px;
+right:60px;
+display:flex;
+justify-content:center;
+z-index:50;
+}
+
+/* QUESTION BOX */
+
+.question-box{
+
+width:100%;
+max-width:1200px;
+
+padding:24px 30px;
+
+border-radius:24px;
+
+background:
+linear-gradient(
+135deg,
+rgba(10,20,40,.92),
+rgba(15,25,50,.85)
+);
+
+backdrop-filter:blur(16px);
+
+border:1px solid rgba(0,229,255,.15);
+
+box-shadow:
+0 0 30px rgba(0,229,255,.08),
+0 10px 40px rgba(0,0,0,.45);
+
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:22px;
+}
+
+/* QUESTION */
+
+.question{
+font-size:30px;
+font-family:'Audiowide',sans-serif;
+text-align:center;
+text-shadow:0 0 15px rgba(0,229,255,.4);
+}
+
+/* TYPE */
+
+.question-type{
+font-size:14px;
+font-family:'Press Start 2P',cursive;
+color:#00e5ff;
+margin-bottom:12px;
+}
+
+/* ANSWERS */
+
+.answers{
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+gap:18px;
+width:100%;
+}
+
+/* BUTTON */
+
+button{
+min-width:260px;
+padding:20px;
+border:none;
+border-radius:18px;
+font-family:'Rajdhani',sans-serif;
+font-size:24px;
+font-weight:700;
+cursor:pointer;
+color:white;
+
+background:
+linear-gradient(
+135deg,
+rgba(25,35,60,.95),
+rgba(35,50,80,.85)
+);
+
+border:1px solid rgba(255,255,255,.08);
+
+transition:.25s;
+}
+
+button:hover{
+transform:translateY(-4px) scale(1.03);
+border-color:rgba(0,229,255,.45);
+box-shadow:0 0 25px rgba(0,229,255,.18);
+}
+
+/* FLASH */
+
+.flash{
+position:fixed;
+inset:0;
+background:red;
+opacity:0;
+pointer-events:none;
+mix-blend-mode:screen;
+}
+
+.flash.active{
+animation:flash .22s ease;
+}
+
+@keyframes flash{
+0%{opacity:0;}
+50%{opacity:.28;}
+100%{opacity:0;}
+}
+
+/* WAVE TEXT */
+
+.waveText{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+font-size:64px;
+font-family:'Press Start 2P',cursive;
+color:#00e5ff;
+text-shadow:0 0 30px rgba(0,229,255,.9);
+opacity:0;
+transition:.4s;
+pointer-events:none;
+z-index:999;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:1200px){
+
+.answers{
+flex-direction:column;
+}
+
+button{
+width:100%;
+}
+
+.enemies{
+right:20px;
+}
+
+.hero-area{
+left:20px;
+}
+
+.hero{
+width:190px;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="game">
+
+<div class="left">
+
+<!-- TOPBAR -->
+
+<div class="topbar">
+
+<div class="logo">
+
+<div class="logo-icon">
+CQ
+</div>
+
+<div class="logo-text">
+<h1>CodeQuest</h1>
+<span>CYBER RPG EXPERIENCE</span>
+<div class="audio-control">
+<div class="audio-label" id="musicVolumeLabel" data-value="35%">MUSIC</div>
+<input class="music-slider" id="musicSlider" type="range" min="0" max="1" step="0.01" value="0.35">
+</div>
+</div>
+
+</div>
+
+<div class="mode">
+âš” BATTLE MODE
+</div>
+
+</div>
+
+<!-- QUESTION BAR -->
+
+<div class="question-bar">
+
+<div class="question-box">
+
+<div class="question" id="question"></div>
+
+<div class="answers" id="answers"></div>
+
+</div>
+
+</div>
+
+<!-- HERO -->
+
+<div class="hero-area">
+
+<img
+class="hero"
+id="hero"
+src="https://media.discordapp.net/attachments/1496836122938970123/1508749656371499088/Perso_principal_1.png?ex=6a16ac1d&is=6a155a9d&hm=09882a6e4ed08aa9a7b1a9877a0e8fbe35bcbab6f525380bbb39b73051798152&=&format=webp&quality=lossless&width=704&height=704"
+>
+
+<div class="hero-card">
+
+<div class="hero-name">
+<strong id="heroName">PSIN ASTROLABE</strong>
+<span></span>
+</div>
+
+<div class="hp-wrap">
+<div id="heroHp"></div>
+</div>
+
+</div>
+
+</div>
+
+<!-- ENEMIES -->
+
+<div class="enemies" id="enemyBox"></div>
+
+<!-- WAVE TEXT -->
+
+<div class="waveText" id="waveText"></div>
+
+</div>
+
+</div>
+
+<div class="flash" id="flash"></div>
+
+<!-- MUSIC -->
+
+<audio id="bgMusic" autoplay loop>
+<source src="src/audio/nrmal.mp3" type="audio/mp3">
+</audio>
+
+<script>
+
+// MUSIC
+
+const music = document.getElementById("bgMusic");
+const musicSlider = document.getElementById("musicSlider");
+const musicVolumeLabel = document.getElementById("musicVolumeLabel");
+const musicTracks = {
+normal:"src/audio/nrmal.mp3",
+miniboss:"src/audio/miniboss.mp3",
+boss:"src/audio/boss.mp3"
+};
+let currentMusicTrack = "";
+
+function getSavedMusicVolume(){
+let saved = Number(localStorage.getItem("musicVolume"));
+return Number.isFinite(saved) ? Math.min(1, Math.max(0, saved)) : 0.35;
+}
+
+function applyMusicVolume(value){
+let percent = Math.round(value * 100);
+music.volume = value;
+musicSlider.value = value;
+musicSlider.style.background = "linear-gradient(90deg,var(--cyan) 0%,var(--purple) " + percent + "%,#1e293b " + percent + "%)";
+musicVolumeLabel.dataset.value = percent + "%";
+localStorage.setItem("musicVolume", String(value));
+}
+
+function initMusicControls(){
+applyMusicVolume(getSavedMusicVolume());
+musicSlider.addEventListener("input",event=>{
+applyMusicVolume(Number(event.target.value));
+music.play().catch(()=>{});
+});
+}
+
+function setBattleMusic(track){
+let src = musicTracks[track] || musicTracks.normal;
+if(currentMusicTrack === src){
+return;
+}
+currentMusicTrack = src;
+music.src = src;
+music.load();
+music.play().catch(()=>{});
+}
+
+function updateBattleMusic(waveData){
+let label = ((waveData && waveData.intro) || "").toUpperCase();
+let names = waveData && waveData.enemies ? waveData.enemies.map(enemy=>enemy.name).join(" ").toUpperCase() : "";
+
+if(label.includes("FINAL") || label.includes("JAVASCRIPT") || names.includes("JAVASCRIPT BOSS")){
+setBattleMusic("boss");
+return;
+}
+
+if(label.includes("BOSS") || names.includes("MINI BOSS") || names.includes("PYTHON BOSS")){
+setBattleMusic("miniboss");
+return;
+}
+
+setBattleMusic("normal");
+}
+
+initMusicControls();
+setBattleMusic("normal");
+
+// QUESTIONS
+
+const questions = [
+
+{
+q:"A quoi sert HTML dans une page web ?",
+a:["Construire la structure","Dessiner une image","Lancer un serveur"],
+c:0,
+type:"html"
+},
+
+{
+q:"Quelle balise affiche un paragraphe ?",
+a:["<p>","<img>","<style>"],
+c:0,
+type:"html"
+},
+
+{
+q:"A quoi sert CSS ?",
+a:["Changer le style","Ecrire un titre","Sauver un mot de passe"],
+c:0,
+type:"css"
+},
+
+{
+q:"Quelle propriete change la couleur du texte ?",
+a:["background","color","text-link"],
+c:1,
+type:"css"
+},
+
+
+];
+// VARIABLES
+
+let q = 0;
+const storedHeroHP = Number(localStorage.getItem("heroHP"));
+let heroHP = Number.isFinite(storedHeroHP)
+? Math.min(100, Math.max(0, storedHeroHP) + 40)
+: 100;
+
+function setupHeroState(){
+
+const playerName = localStorage.getItem("playerName") || "PSIN ASTROLABE";
+const heroName = document.getElementById("heroName");
+
+if(heroName){
+heroName.innerText = playerName;
+}
+
+document.getElementById("heroHp").style.width = heroHP + "%";
+saveHeroHP();
+
+}
+
+function saveHeroHP(){
+localStorage.setItem("heroHP", String(Math.max(0, Math.min(100, heroHP))));
+}
+
+let waves = [
+
+{
+count:2,
+enemies:[
+
+{
+name:"HTML TITAN",
+type:"html",
+img:"https://media.discordapp.net/attachments/1496836122938970123/1506393136962994236/HTML_Troll.png?ex=6a16ab2f&is=6a1559af&hm=022b9ffbeeb37be2da31de5db070a92021c85b41fc37fb46e556a6a7fe962621&=&format=webp&quality=lossless&width=704&height=704",
+},
+
+{
+name:"CSS PHANTOM",
+type:"css",
+img:"https://media.discordapp.net/attachments/1496836122938970123/1506394579446927500/CSS_Troll.png?ex=6a16ac87&is=6a155b07&hm=b29c2d90ab96dfa5b808be0e9bf727e0b3d24b51e8b887ae2e13a5cad00b5a51&=&format=webp&quality=lossless&width=804&height=904"
+},
+]
+}
+
+];
+
+let wave = 0;
+let enemies = [];
+
+const fireballGif = "src/img/New_Piskel.gif";
+const slashGif = "src/img/New_Piskel_1.gif";
+
+function playHeroAttack(type){
+
+let hero = document.getElementById("hero");
+let target = document.querySelector(".enemy:not(.dead)");
+
+if(!hero || !target){
+return;
+}
+
+hero.classList.add("attack");
+
+setTimeout(()=>{
+hero.classList.remove("attack");
+},350);
+
+let heroBox = hero.getBoundingClientRect();
+let targetBox = target.getBoundingClientRect();
+
+let startX = heroBox.left + heroBox.width * .5 + "px";
+let startY = heroBox.top + heroBox.height * .48 + "px";
+let endX = targetBox.left + targetBox.width * .5 + "px";
+let endY = targetBox.top + targetBox.height * .42 + "px";
+
+let effect = document.createElement("img");
+let isFireball = type === "html";
+
+effect.src = isFireball ? fireballGif : slashGif;
+effect.className = isFireball
+? "attack-effect fireball-effect"
+: "attack-effect slash-effect";
+
+effect.style.setProperty("--start-x", startX);
+effect.style.setProperty("--start-y", startY);
+effect.style.setProperty("--end-x", endX);
+effect.style.setProperty("--end-y", endY);
+
+document.body.appendChild(effect);
+
+setTimeout(()=>{
+effect.remove();
+},650);
+
+}
+
+// WAVE TEXT
+
+function showWaveText(text){
+
+const waveText = document.getElementById("waveText");
+
+waveText.innerText = text;
+
+waveText.style.opacity = "1";
+waveText.style.transform = "translate(-50%,-50%) scale(1.1)";
+
+setTimeout(()=>{
+
+waveText.style.opacity = "0";
+waveText.style.transform = "translate(-50%,-50%) scale(.9)";
+
+},1800);
+
+}
+
+// START WAVE
+
+function startWave(){
+
+document.getElementById("enemyBox").innerHTML = "";
+
+enemies = [];
+
+let w = waves[wave];
+
+
+
+updateBattleMusic(w);
+for(let i=0;i<w.count;i++){
+
+let e = {
+hp:100,
+img:w.enemies[i].img,
+name:w.enemies[i].name,
+type:w.enemies[i].type,
+id:Math.random()
+};
+
+enemies.push(e);
+
+let div = document.createElement("div");
+
+div.className = "enemy";
+div.id = "enemy"+e.id;
+
+div.innerHTML = `
+
+<img src="${e.img}">
+
+<div class="enemy-title">
+${e.name}
+</div>
+
+<div class="hpbar">
+<div class="hp" id="hp${e.id}"></div>
+</div>
+
+`;
+
+document.getElementById("enemyBox").appendChild(div);
+
+}
+
+}
+
+// LOAD QUESTION
+
+function loadQ(){
+
+q = findNextQuestionIndex(q);
+
+if(q === -1){
+return;
+}
+
+let data = questions[q];
+
+document.getElementById("question").innerHTML = `
+
+<div class="question-type">
+${data.type.toUpperCase()} ATTACK
+</div>
+
+${data.q}
+
+`;
+
+let box = document.getElementById("answers");
+
+box.innerHTML = "";
+
+data.a.forEach((a,i)=>{
+
+let b = document.createElement("button");
+
+b.innerText = a;
+
+b.onclick = ()=>{
+
+if(i === data.c){
+
+playHeroAttack(data.type);
+hitEnemy(data.type);
+
+}else{
+
+heroHit();
+
+}
+
+flash();
+next();
+
+};
+
+box.appendChild(b);
+
+});
+
+}
+
+// NEXT
+
+function findNextQuestionIndex(start){
+
+if(enemies.length === 0){
+return -1;
+}
+
+for(let i=0;i<questions.length;i++){
+
+let index = (start + i) % questions.length;
+
+if(enemies.some(enemy => enemy.type === questions[index].type && enemy.hp > 0)){
+return index;
+}
+
+}
+
+return -1;
+
+}
+
+function next(){
+
+q++;
+
+if(q >= questions.length){
+q = 0;
+}
+
+loadQ();
+
+}
+
+// HIT ENEMY
+
+function hitEnemy(type){
+
+let enemy = enemies.find(e => e.type === type && e.hp > 0);
+
+if(!enemy){
+
+showWaveText("âŒ AUCUN ENNEMI");
+
+return;
+
+}
+
+enemy.hp -= 50;
+
+document.getElementById("hp"+enemy.id).style.width =
+enemy.hp + "%";
+
+let dom = document.getElementById("enemy"+enemy.id);
+
+dom.style.transform = "scale(1.08)";
+
+setTimeout(()=>{
+dom.style.transform = "";
+},200);
+
+if(enemy.hp <= 0){
+
+dom.classList.add("dead");
+
+setTimeout(()=>{
+
+enemies =
+enemies.filter(e => e.id !== enemy.id);
+
+if(enemies.length === 0){
+
+saveHeroHP();
+localStorage.setItem("unlockedLevel", Math.max(Number(localStorage.getItem("unlockedLevel")) || 1, 2));
+window.location.href = "menu.html";
+return;
+}
+
+},300);
+
+}
+
+}
+
+// HERO HIT
+
+function heroHit(){
+
+let h = document.getElementById("hero");
+
+h.classList.add("hit");
+
+setTimeout(()=>{
+h.classList.remove("hit");
+},200);
+
+heroHP -= 10;
+
+if(heroHP < 0){
+heroHP = 0;
+}
+
+document.getElementById("heroHp").style.width =
+heroHP + "%";
+
+saveHeroHP();
+
+if(heroHP <= 0){
+
+showWaveText("ðŸ’€ GAME OVER");
+
+setTimeout(()=>{
+location.reload();
+},2000);
+
+}
+
+}
+
+// FLASH
+
+function flash(){
+
+let f = document.getElementById("flash");
+
+f.classList.add("active");
+
+setTimeout(()=>{
+f.classList.remove("active");
+},200);
+
+}
+
+// INIT
+
+setupHeroState();
+startWave();
+loadQ();
+
+</script>
+<div class="goodFlash" id="goodFlash"></div>
+<div class="goodText" id="goodText">GOOD!</div>
+</body>
+</html>
+
+
+
