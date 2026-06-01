@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
 
@@ -182,12 +182,29 @@ box-shadow:0 0 18px rgba(0,229,255,.75);
 /* MODE */
 
 .mode{
+display:flex;
+align-items:center;
+gap:8px;
 padding:12px 18px;
 border-radius:14px;
 background:rgba(255,255,255,.05);
 border:1px solid rgba(255,255,255,.08);
 color:var(--cyan);
 font-size:14px;
+font-weight:700;
+text-decoration:none;
+transition:.2s;
+}
+
+.mode:hover{
+background:rgba(0,229,255,.12);
+border-color:rgba(0,229,255,.45);
+box-shadow:0 0 18px rgba(0,229,255,.18);
+}
+
+.mode svg{
+width:18px;
+height:18px;
 }
 
 /* HERO */
@@ -597,9 +614,13 @@ CQ
 
 </div>
 
-<div class="mode">
-âš” BATTLE MODE
-</div>
+<a class="mode" href="https://www.w3schools.com/" target="_blank" rel="noopener noreferrer" title="Ouvrir W3Schools">
+<svg viewBox="0 0 24 24" aria-hidden="true">
+<path fill="currentColor" d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3Z"/>
+<path fill="currentColor" d="M5 5h6v2H7v10h10v-4h2v6H5V5Z"/>
+</svg>
+W3Schools
+</a>
 
 </div>
 
