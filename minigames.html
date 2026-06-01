@@ -434,7 +434,6 @@ filter:drop-shadow(0 0 22px rgba(0,229,255,.35));
 display:grid;
 grid-template-columns:1fr 260px;
 gap:18px;
-cursor:url("src/img/marteau.webp") 24 24, pointer;
 }
 
 .holes{
@@ -442,7 +441,7 @@ display:grid;
 grid-template-columns:repeat(3,1fr);
 gap:14px;
 min-height:500px;
-cursor:url("src/img/marteau.webp") 24 24, pointer;
+cursor:none;
 }
 
 .hole{
@@ -453,7 +452,30 @@ border:1px solid rgba(255,255,255,.1);
 background:
 radial-gradient(ellipse at bottom,rgba(0,0,0,.75) 0 32%,transparent 34%),
 rgba(255,255,255,.045);
-cursor:url("src/img/marteau.webp") 24 24, pointer;
+cursor:none;
+}
+
+.hammer-cursor{
+position:fixed;
+left:0;
+top:0;
+width:74px;
+height:74px;
+object-fit:contain;
+pointer-events:none;
+z-index:5000;
+opacity:0;
+transform:translate(-20px,-20px) rotate(-18deg);
+transition:opacity .08s, transform .08s;
+filter:drop-shadow(0 0 12px rgba(251,191,36,.45));
+}
+
+.hammer-cursor.active{
+opacity:1;
+}
+
+.hammer-cursor.hit{
+transform:translate(-20px,-20px) rotate(18deg) scale(.94);
 }
 
 .mole{
@@ -692,6 +714,8 @@ flex-direction:column;
 </section>
 </main>
 
+<img class="hammer-cursor" id="hammerCursor" src="src/img/marteau.webp" alt="">
+
 <script>
 const tabs = document.querySelectorAll(".tab");
 const panels = document.querySelectorAll(".panel");
@@ -929,6 +953,7 @@ newSecretNumber();
 
 // Tape Taupe
 const holes = document.getElementById("holes");
+const hammerCursor = document.getElementById("hammerCursor");
 let moleActive = -1;
 let activeEnemy = null;
 let moleScore = 0;
@@ -943,6 +968,27 @@ const moleEnemies = [
 {name:"PYTHON BOSS",img:"src/img/python_enemie.webp",points:4,boss:true},
 {name:"JAVASCRIPT BOSS",img:"src/img/javascript_boss.webp",points:5,boss:true}
 ];
+
+holes.addEventListener("mouseenter",()=>{
+hammerCursor.classList.add("active");
+});
+
+holes.addEventListener("mouseleave",()=>{
+hammerCursor.classList.remove("active");
+});
+
+holes.addEventListener("mousemove",event=>{
+hammerCursor.style.left = event.clientX + "px";
+hammerCursor.style.top = event.clientY + "px";
+});
+
+holes.addEventListener("mousedown",()=>{
+hammerCursor.classList.add("hit");
+});
+
+document.addEventListener("mouseup",()=>{
+hammerCursor.classList.remove("hit");
+});
 
 for(let i=0;i<9;i++){
 let hole = document.createElement("div");
